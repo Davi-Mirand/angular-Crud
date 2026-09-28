@@ -1,0 +1,29 @@
+.spacer{
+  flex: 1 1 auto;
+}
+
+.navegacao-desktop{
+  display: flex;
+  gap: 4px;
+}
+
+.botoes-nav{
+  text-align: center;
+  padding: 10px 20px;
+  background-color: transparent;
+  border: none;
+  font-weight: bold;
+  display:flex;
+  align-items: center;
+  color: #fff;
+  gap: 10px;
+  cursor: pointer;
+  transition: all 100ms ease-out;
+
+}
+
+.botoes-nav:hover{
+  background-color: #1b2592;
+  border-radius: 10px;
+  box-shadow: 1px 1px 1px #0c137d;
+}

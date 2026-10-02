@@ -51,8 +51,8 @@ preparaEditar(id: string){
   this.router.navigate(['/cadastro'], {queryParams: {"id": id}} )
 }
 
-preparaDeletar(){
-  this.deletando = true;
+preparaDeletar(cliente: Cliente){
+  cliente.deletando = true;
 }
 
 deletar(cliente: Cliente){

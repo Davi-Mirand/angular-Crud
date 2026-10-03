@@ -1,16 +1,20 @@
 import {MatSnackBar} from '@angular/material/snack-bar'
 import { Cliente } from './cliente';
 import { ClienteService } from '../../service/cliente.service';
+import { BrasilapiService } from '../../service/brasilapi.service'
 import { Component, OnInit, inject } from '@angular/core';
 import { FlexLayoutModule } from '@ngbracket/ngx-layout';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
+import { MatSelectChange, MatSelectModule } from '@angular/material/select';
 import { FormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { ActivatedRoute, Router } from '@angular/router';
 import {NgxMaskDirective, provideNgxMask} from 'ngx-mask';
+import { Estado, Municipio } from '../../service/brasilapi.models';
+import { CommonModule } from '@angular/common'
 
 @Component({
   selector: 'app-cadastro',
@@ -22,6 +26,9 @@ import {NgxMaskDirective, provideNgxMask} from 'ngx-mask';
     MatInputModule,
     MatIconModule,
     MatButtonModule,
+    MatButtonModule,
+    MatSelectModule,
+    CommonModule,
     NgxMaskDirective
 
   ],
@@ -35,11 +42,14 @@ export class CadastroComponent implements OnInit{
 
   cliente: Cliente = Cliente.newCliente();
   atualizando: boolean = false;
-  snack: MatSnackBar = inject(MatSnackBar)
+  snack: MatSnackBar = inject(MatSnackBar);
+  estados: Estado[] = [];
+  municipios: Municipio[] = [];
 
 
   constructor(
     private servicel: ClienteService,
+    private brasilapiService: BrasilapiService,
     private route: ActivatedRoute,
     private router: Router
   ){}
@@ -54,6 +64,12 @@ export class CadastroComponent implements OnInit{
         if(clienteEncontrado){
           this.atualizando = true;
           this.cliente = clienteEncontrado;
+
+          if(this.cliente.uf){
+            const event = {value: this.cliente.uf};
+            this.carregarMunicipios( event as MatSelectChange);
+          }
+
         }else{
           this.cliente = Cliente.newCliente();
         }
@@ -61,6 +77,24 @@ export class CadastroComponent implements OnInit{
 
         this.cliente = this.servicel.buscarClientePorId(id) || Cliente.newCliente();
       }
+    })
+
+    this.carregarUFs();
+  }
+
+  carregarUFs(){
+    //observable  subscriber
+    this.brasilapiService.listarUFs().subscribe({
+      next: listaEstados => this.estados = listaEstados,
+      error: erro => console.log("ocorreu o erro: ", erro)
+    })
+  }
+
+  carregarMunicipios(event: MatSelectChange){
+    const ufSelecionada = event.value;
+    this.brasilapiService.listarMunicipios(ufSelecionada).subscribe({
+      next: listaMunicipios => this.municipios = listaMunicipios,
+      error: erro => console.log("ocorreu o erro: ", erro)
     })
   }
 
